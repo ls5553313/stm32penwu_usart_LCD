@@ -28,25 +28,27 @@
 #include "queue.h"
 #include "event_groups.h"
 /* 开发板硬件bsp头文件 */
-#include "bsp_led.h"
-#include "bsp_key.h"
-#include "delay.h"
 #include "bsp_usart1.h"
+#include "delay.h"
 #include "./usart/bsp_usart2.h"
 #include "tasks.h"
 #include "bsp_adc.h"
-#include "./led/bsp_led.h" 
 #include "./i2c/bsp_i2c_ee.h"
-#include "bsp_GeneralTim.h" 
+#include "bsp_led.h"
+#include "bsp_key.h"
+#include "./IrDa/bsp_irda.h" 
+#include "bsp_adc.h"
+#include "./i2c/bsp_i2c_ee.h"
 
 
 extern uint8_t SendBuff1[SENDBUFF1_SIZE];
 extern uint8_t SendBuff2[SENDBUFF2_SIZE];
-extern __IO uint16_t ADC_ConvertedValue[NOFCHANEL];  //ADC模拟转换电压
-extern float ADC_ConvertedValueLocal1;     // 局部变量，用于保存转换计算后的电压值 	 
-extern float ADC_ConvertedValueLocal2;     // 局部变量，用于保存转换计算后的电压值 	
-extern uint8_t zhangli_qidong;
-extern uint8_t yunxing_zhuangtai;
+extern int delay_time;              //延时时间单位毫秒 
+extern int sec;											//延时时间单位秒
+extern char string[20];							//字符串,用于显示LCD
+extern uint8_t key;									//红外遥控按键数值
+extern __IO uint16_t ADC_ConvertedValue;  //ADC模拟转换电压
+extern float ADC_ConvertedValueLocal;     // 局部变量，用于保存转换计算后的电压值 	 
 
 /**************************** 任务句柄 ********************************/
 /* 
@@ -55,13 +57,10 @@ extern uint8_t yunxing_zhuangtai;
  * 这个句柄可以为NULL。
  */
 static TaskHandle_t AppTaskCreate_Handle = NULL;/* 创建任务句柄 */
-static TaskHandle_t Jiting_Task_Handle = NULL;/* LED任务句柄 */
 static TaskHandle_t Main_Task_Handle = NULL;/* KEY任务句柄 */
 static TaskHandle_t ADC_Task_Handle = NULL;/* KEY任务句柄 */
-static TaskHandle_t Diandong_Task_Handle = NULL;/* KEY任务句柄 */
-static TaskHandle_t Kaiguan_Task_Handle = NULL;/* KEY任务句柄 */
-static TaskHandle_t Zhuangtai_Task_Handle = NULL;/* KEY任务句柄 */
-extern TimerHandle_t Swtmr1_Handle;   /* 软件定时器句柄 */
+static TaskHandle_t LCD_Task_Handle = NULL;/* KEY任务句柄 */
+static TimerHandle_t Swtmr1_Handle;   /* 软件定时器句柄 */
 
 /********************************** 内核对象句柄 *********************************/
 /*
@@ -96,12 +95,9 @@ QueueHandle_t Test_Queue =NULL;
 */
 static void AppTaskCreate(void);/* 用于创建任务 */
 
-static void Jiting_Task(void* pvParameters);/* Test_Task任务实现 */
 static void Main_Task(void* pvParameters);/* KEY_Task任务实现 */
 static void ADC_Task(void* pvParameters);/* KEY_Task任务实现 */
-static void Diandong_Task(void* pvParameters);/* KEY_Task任务实现 */
-static void Kaiguan_Task(void* pvParameters);/* KEY_Task任务实现 */
-static void Zhuangtai_Task(void* pvParameters);/* KEY_Task任务实现 */
+static void LCD_Task(void* pvParameters);/* KEY_Task任务实现 */
 static void Swtmr1_Callback(void* parameter);
 
 static void BSP_Init(void);/* 用于初始化板载相关资源 */
@@ -167,12 +163,6 @@ static void AppTaskCreate(void)
                         (TaskHandle_t*  )&Main_Task_Handle);/* 任务控制块指针 */ 
 												
 									
-	xReturn = xTaskCreate((TaskFunction_t )Jiting_Task,  /* 任务入口函数 */
-                        (const char*    )"Jiting_Task",/* 任务名字 */
-                        (uint16_t       )512,  /* 任务栈大小 */
-                        (void*          )NULL,/* 任务入口函数参数 */
-                        (UBaseType_t    )5, /* 任务的优先级 */
-                        (TaskHandle_t*  )&Jiting_Task_Handle);/* 任务控制块指针 */ 
 												
 	xReturn = xTaskCreate((TaskFunction_t )ADC_Task,  /* 任务入口函数 */
                         (const char*    )"ADC_Task",/* 任务名字 */
@@ -181,31 +171,16 @@ static void AppTaskCreate(void)
                         (UBaseType_t    )2, /* 任务的优先级 */
                         (TaskHandle_t*  )&ADC_Task_Handle);/* 任务控制块指针 */ 
 												
-	xReturn = xTaskCreate((TaskFunction_t )Diandong_Task,  /* 任务入口函数 */
-                        (const char*    )"Diandong_Task",/* 任务名字 */
+	xReturn = xTaskCreate((TaskFunction_t )LCD_Task,  /* 任务入口函数 */
+                        (const char*    )"LCD_Task",/* 任务名字 */
                         (uint16_t       )512,  /* 任务栈大小 */
                         (void*          )NULL,/* 任务入口函数参数 */
                         (UBaseType_t    )2, /* 任务的优先级 */
-                        (TaskHandle_t*  )&Diandong_Task_Handle);/* 任务控制块指针 */ 
-	
-	xReturn = xTaskCreate((TaskFunction_t )Zhuangtai_Task,  /* 任务入口函数 */
-                        (const char*    )"Zhuangtai_Task",/* 任务名字 */
-                        (uint16_t       )256,  /* 任务栈大小 */
-                        (void*          )NULL,/* 任务入口函数参数 */
-                        (UBaseType_t    )2, /* 任务的优先级 */
-                        (TaskHandle_t*  )&Zhuangtai_Task_Handle);/* 任务控制块指针 */ 
-	
-	xReturn = xTaskCreate((TaskFunction_t )Kaiguan_Task,  /* 任务入口函数 */
-                        (const char*    )"Kaiguan_Task",/* 任务名字 */
-                        (uint16_t       )256,  /* 任务栈大小 */
-                        (void*          )NULL,/* 任务入口函数参数 */
-                        (UBaseType_t    )2, /* 任务的优先级 */
-                        (TaskHandle_t*  )&Kaiguan_Task_Handle);/* 任务控制块指针 */ 
-												
-												
+                        (TaskHandle_t*  )&LCD_Task_Handle);/* 任务控制块指针 */ 
+											
 	
 	Swtmr1_Handle=xTimerCreate((const char*			)"OneShotTimer",
-                             (TickType_t			)120000,/* 定时器周期 1s */
+                             (TickType_t			)5000,/* 定时器周期 1s */
                              (UBaseType_t			)pdFALSE,/* 单次模式 */
                              (void*					  )1,/* 为每个计时器分配一个索引的唯一ID */
                              (TimerCallbackFunction_t)Swtmr1_Callback); 
@@ -217,14 +192,7 @@ static void AppTaskCreate(void)
 
 
 
-static void Jiting_Task(void* parameter)
-{
-  while(1)						//循环
-	{
-		jiting_task();
-		vTaskDelay(50);			//延时20个tic
-	}
-}
+
 
 
 
@@ -232,62 +200,52 @@ static void ADC_Task(void* parameter) //模拟量
 {
    while(1)
 	 {
-		wendu_task();
-		if(zhangli_qidong ==1)
-		{
-			zhangli_task();
-		}
-		vTaskDelay(1000);
+		key=Remote_Scan();
+		//if(key!=0){printf("key=%d\r\n",key);}
+		vTaskDelay(100);/* 延时50个tick */
+		key=0;
 	 }
 }
 
-static void Kaiguan_Task(void* parameter) //模拟量
+static void LCD_Task(void* parameter) //模拟量
 {
    while(1)
 	 {
-		kaiguan_task();
-		vTaskDelay(50);
-	 }
-}
-
-static void Diandong_Task(void* parameter) //模拟量
-{
-   while(1)
-	 {
-		diandong_renwu();
-		vTaskDelay(50);
+		LCD_renwu();
+		vTaskDelay(100);/* 延时50个tick */
 	 }
 }
 
 static void Main_Task(void* parameter) //主任务
 {
-   while(1)
+	vTaskDelay(1000);
+	i2c_reading();
+	vTaskDelay(2000);
+	while(1)
 	 {
-		 zhu_renwu();
-		 vTaskDelay(50);
+		 if( main_task1(0) == 1 )
+		 {
+			 LED1_ON; // 输出
+			 HMISends("page0.t5.txt=\"开\"");
+			 while(main_task1(0)==1){vTaskDelay(100);};
+			 if(Swtmr1_Handle != NULL)
+			{
+				xTimerChangePeriod(Swtmr1_Handle,delay_time,1);  //更改延时时间
+			}
+			if(Swtmr1_Handle != NULL)
+			{
+				xTimerStart(Swtmr1_Handle,0);	//开启定时器
+			}
+		 }
+		vTaskDelay(200);/* 延时20个tick */
 	 }
 }
 
-static void Zhuangtai_Task(void* parameter)
-{
-  while(1)						//循环
-	{
-		zhuangtai_renwu();
-		vTaskDelay(50);			//延时20个tic
-	}
-}
 
-
-/***********************************************************************
-  * @ 函数名  ： Swtmr2_Callback
-  * @ 功能说明： 软件定时器2 回调函数，打印回调函数信息&当前系统时间
-  *              软件定时器请不要调用阻塞函数，也不要进行死循环，应快进快出
-  * @ 参数    ： 无  
-  * @ 返回值  ： 无
-  **********************************************************************/
 static void Swtmr1_Callback(void* parameter)
 {	
-	yunxing_zhuangtai=1;
+	LED1_OFF;
+	HMISends("page0.t5.txt=\"关\"");
 }
 
 /***********************************************************************
@@ -312,21 +270,25 @@ static void BSP_Init(void)
 	LED_GPIO_Config();
   
   /* 按键初即输入初始化	*/
- Key_GPIO_Config();
-	FK_GPIO_Config();
+  Key_GPIO_Config();
 	
 	/* 串口初始化,此程序不用	*/
-	USART1_Config(); 
+	//USART1_Config(); 
 	  /* 配置使用DMA模式 */
 		/* 串口初始化,此程序不用	*/
-   USART2_Config(); 
+  USART2_Config(); 
 	  /* 配置使用DMA模式 */
 	//printf("//////////////////////////////// \r\n");
 	
-	ADVANCE_TIM_Init();
+	Remote_Init();
+
+	
+	i2c_CfgGpio();
+
 	
 	/* 模拟量初始化	*/
 	ADCx_Init();
+
 
 }
 

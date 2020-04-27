@@ -38,7 +38,7 @@
 "..\..\output\bsp_usart1.o"
 "..\..\output\bsp_usart2.o"
 "..\..\output\data_process.o"
-"..\..\output\bsp_generaltim.o"
+"..\..\output\bsp_irda.o"
 "..\..\output\croutine.o"
 "..\..\output\event_groups.o"
 "..\..\output\list.o"

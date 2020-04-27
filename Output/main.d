@@ -44,8 +44,6 @@
 ..\..\output\main.o: ..\..\FreeRTOS\include\queue.h
 ..\..\output\main.o: ..\..\FreeRTOS\include\event_groups.h
 ..\..\output\main.o: ..\..\FreeRTOS\include\timers.h
-..\..\output\main.o: ..\..\User\led\bsp_led.h
-..\..\output\main.o: ..\..\User\Key\bsp_key.h
 ..\..\output\main.o: ..\..\User\delay\delay.h
 ..\..\output\main.o: ..\..\User\./usart/bsp_usart2.h
 ..\..\output\main.o: ..\..\User\tasks.h
@@ -53,4 +51,7 @@
 ..\..\output\main.o: ..\..\User\./i2c/bsp_i2c_ee.h
 ..\..\output\main.o: ..\..\User\./i2c/bsp_i2c_gpio.h
 ..\..\output\main.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\inttypes.h
-..\..\output\main.o: ..\..\User\generalTim\bsp_GeneralTim.h
+..\..\output\main.o: ..\..\User\led\bsp_led.h
+..\..\output\main.o: ..\..\User\Key\bsp_key.h
+..\..\output\main.o: ..\..\User\./IrDa/bsp_irda.h
+..\..\output\main.o: ..\..\User\sys\sys.h

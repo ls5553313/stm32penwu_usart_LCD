@@ -465,13 +465,13 @@ ARM Macro Assembler    Page 8
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M3 --apcs=interw
 ork --depend=..\..\output\startup_stm32f10x_md.d -o..\..\output\startup_stm32f1
-0x_md.o -I"C:\Users\Shuo\Desktop\stm32程序\皮带集控\13--Fire_F103c8t6-FreeRTOS+
-1.44 spi tft + 软件定时器 + 串口 + 红外遥控 + ADC + iic存储 - 副本 - 副本\Proje
-ct\RVMDK（uv5）\RTE" -Id:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Incl
-ude -Id:\Keil_v5\ARM\CMSIS\Include --predefine="__MICROLIB SETA 1" --predefine=
-"__UVISION_VERSION SETA 515" --predefine="STM32F10X_MD SETA 1" --list=..\..\lis
-ting\startup_stm32f10x_md.lst ..\..\Libraries\CMSIS\startup\startup_stm32f10x_m
-d.s
+0x_md.o -I"C:\Users\Shuo\Desktop\stm32程序\STM32F103C8T6核心板_TFT144例程\13--F
+ire_F103c8t6-FreeRTOS+软件定时器 + 2路串口DMA + ADC + 喷雾+串口屏+红外i遥控+iic
+存储\Project\RVMDK（uv5）\RTE" -Id:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\D
+evice\Include -Id:\Keil_v5\ARM\CMSIS\Include --predefine="__MICROLIB SETA 1" --
+predefine="__UVISION_VERSION SETA 515" --predefine="STM32F10X_MD SETA 1" --list
+=..\..\listing\startup_stm32f10x_md.lst ..\..\Libraries\CMSIS\startup\startup_s
+tm32f10x_md.s
 
 
 

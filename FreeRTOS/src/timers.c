@@ -821,7 +821,7 @@ TickType_t xTimeNow;
 				case tmrCOMMAND_CHANGE_PERIOD :
 				case tmrCOMMAND_CHANGE_PERIOD_FROM_ISR :
 					pxTimer->xTimerPeriodInTicks = xMessage.u.xTimerParameters.xMessageValue;
-					configASSERT( ( pxTimer->xTimerPeriodInTicks > 0 ) );
+					configASSERT( ( pxTimer->xTimerPeriodInTicks >= 0 ) );
 
 					/* The new period does not really have a reference, and can
 					be longer or shorter than the old one.  The command time is

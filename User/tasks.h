@@ -2,72 +2,31 @@
 #define	__TASKS_H
 
 #include "stm32f10x.h"
-#include "FreeRTOS.h"
-#include "task.h"
-#include "queue.h"
-#include "event_groups.h"
 
-//uint8_t wendu_shangxian=100;
-//uint8_t wendu_xiaxian=0;
-extern uint8_t wendu_sheding;
+#define SETTING	226
+#define RETURN	194
+#define ADD	    2
+#define LESS	  152
+#define ONE			48
+#define TWO	    24
+#define THREE	  122
+#define NEXT	  144
 
-extern uint8_t qiche_yanshi;
-extern uint8_t tingche_yanshi;
-
-extern uint8_t duimei_yanshi;
-extern uint8_t silie_yanshi;
-extern uint8_t paopian_yanshi;
-extern uint8_t jiting_yanshi;
-extern uint8_t wendu_yanshi;
-extern uint8_t yanwu_yanshi;
-extern uint8_t sashui_yanshi;
-
-extern uint8_t sudu_yanshi;
-extern uint8_t sudu_sheding;
-extern uint16_t sudu_dangqian;
-extern uint8_t sudu_m_s;
-
-extern uint8_t zhudianji_zhuangtai;
-extern uint8_t congdianji_zhuangtai;
-extern uint8_t zhadianji_zhuangtai;
-extern uint8_t zhanglidianji_zhuangtai;
-
-extern uint8_t kaichesashui;
-extern uint8_t zhangli_baojing;
-
-extern uint8_t zhangli_shangxian;
-extern uint8_t zhangli_xiaxian;
-
-extern uint8_t zhudianji_diandong;
-extern uint8_t congdianji_diandong;
-extern uint8_t zhadianji_diandong;
-extern uint8_t fa_diandong;
-extern uint8_t zhanglijia_diandong;
-extern uint8_t zhanglijian_diandong;
-extern uint8_t diandong_shineng;
-
-extern uint8_t qidong_qidong;
-extern uint8_t qidong_tingche;
-extern uint8_t qidong_jiting;
-extern uint8_t qidong_fuwei;
-
-extern uint8_t zhangli_qidong;
-
-extern TimerHandle_t Swtmr1_Handle;
-
-//uint8_t zhangli_liangcheng_shangxian = 100;
-//uint8_t zhangli_liangcheng_xiaxian = 0;
-
+uint8_t main_task1(uint8_t mode_num);
+uint8_t ADC_task(void);
 void NVIC_SysReset(void);
+uint8_t i2c_saving(void);
+uint8_t i2c_reading(void);
+void LCD_renwu(void);
 
-void kaiguan_task(void);
+extern int delay_time;
+extern int sec;
+extern char string[20];
+extern uint8_t key;
+extern uint8_t page;
 
-void wendu_task(void);
-void zhangli_task(void);
-void jiting_task(void);
-void zhu_renwu(void);
-void diandong_renwu(void);
-void zhuangtai_renwu(void);
+extern float ADC_ConvertedValueLocal;   
+
 
 #endif
 

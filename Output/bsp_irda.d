@@ -31,5 +31,5 @@
 ..\..\output\bsp_irda.o: ..\..\Libraries\FWlib\inc\misc.h
 ..\..\output\bsp_irda.o: ..\..\User\sys\sys.h
 ..\..\output\bsp_irda.o: ..\..\User\./led/bsp_led.h
-..\..\output\bsp_irda.o: ..\..\User\./usart/bsp_usart.h
+..\..\output\bsp_irda.o: ..\..\User\./usart/bsp_usart1.h
 ..\..\output\bsp_irda.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h

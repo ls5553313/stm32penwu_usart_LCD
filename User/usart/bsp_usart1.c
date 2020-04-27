@@ -239,10 +239,10 @@ void Usart_SendHalfWord( USART_TypeDef * pUSARTx, uint16_t ch)
 int fputc(int ch, FILE *f)
 {
 		/* 发送一个字节数据到串口 */
-		USART_SendData(DEBUG_USART1, (uint8_t) ch);
+		USART_SendData(DEBUG_USART2, (uint8_t) ch);
 		
 		/* 等待发送完毕 */
-		while (USART_GetFlagStatus(DEBUG_USART1, USART_FLAG_TXE) == RESET);		
+		while (USART_GetFlagStatus(DEBUG_USART2, USART_FLAG_TXE) == RESET);		
 	
 		return (ch);
 }
@@ -251,9 +251,9 @@ int fputc(int ch, FILE *f)
 int fgetc(FILE *f)
 {
 		/* 等待串口输入数据 */
-		while (USART_GetFlagStatus(DEBUG_USART1, USART_FLAG_RXNE) == RESET);
+		while (USART_GetFlagStatus(DEBUG_USART2, USART_FLAG_RXNE) == RESET);
 
-		return (int)USART_ReceiveData(DEBUG_USART1);
+		return (int)USART_ReceiveData(DEBUG_USART2);
 }
 
 /**
